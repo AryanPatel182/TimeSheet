@@ -1,19 +1,19 @@
 import React, { useState, useEffect } from 'react';
-import { Table, Modal, Tag } from 'antd';
-import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
-import moment from 'moment' 
+import { Table, Modal, Tag, Card } from 'antd';
+import { EditOutlined, DeleteOutlined, PhoneOutlined, MailOutlined } from "@ant-design/icons";
+import moment from 'moment'
 import { Button, Form, Input, Select, Popconfirm } from 'antd';
-import { DatePicker, TimePicker} from 'antd';
+import { DatePicker, TimePicker } from 'antd';
+import { Space } from 'antd';
 import { message } from 'antd';
+import './MySheet.css';
 
 const { Option } = Select;
-
-
 const Mysheet = (props) => {
     const [form] = Form.useForm();
     const [visible, setVisible] = useState(false);
     const [editing, setEditing] = useState(null);
-    
+
     const formItemLayout = {
         labelCol: {
             xs: {
@@ -105,11 +105,11 @@ const Mysheet = (props) => {
             dataIndex: 'key',
             key: 'key',
             render: (_, record) => (
-                <>                    
+                <>
                     <Popconfirm
                         title="Are you sure to delete ?"
-                        onConfirm={(e) => {props.onDelete(record.key, e); }}
-                        onCancel={(e) => {}}
+                        onConfirm={(e) => { props.onDelete(record.key, e); }}
+                        onCancel={(e) => { }}
                         okText="Yes"
                         cancelText="No"
                     >
@@ -129,60 +129,74 @@ const Mysheet = (props) => {
         },
     ];
 
-    const onUpdate = (record) => {
-        console.log(record);
+    const onUpdate = (record) => {        
         setVisible(true);
-        onFill(record);     
-        setEditing({ ...record });                           
+        onFill(record);
+        setEditing({ ...record });
     }
-       
-    const onSubmit = (fieldsValue) =>
-    {
-        console.log(fieldsValue);
+
+    const onSubmit = (fieldsValue) => {        
         const date = fieldsValue['datepicker'].format('YYYY-MM-DD');
         const project = fieldsValue['project'];
         const atime = fieldsValue['atimepicker'].format('HH:mm:ss');
         const ltime = fieldsValue['ltimepicker'].format('HH:mm:ss');
         const description = fieldsValue['description'];
-        
+
         let sh = parseInt(atime[0] + atime[1]);
         let eh = parseInt(ltime[0] + ltime[1]);
         let sm = parseInt(atime[3] + atime[4]);
         let em = parseInt(ltime[3] + ltime[4]);
-        
+
         if (eh - sh < 0 || (eh - sh === 0 && em - sm < 0)) {
             message.error('Wrong Start/End Time !');
         }
         else {
-            let tags = ['good'];
-            let hd = eh - sh;   // Hour Duration 
-            let md = em - sm;   // Minutes Duration            
-            if (md < 0) {
-                hd = hd - 1;
-                md = md + 60;
+            let flag = true;
+            props.data.map((item) => {
+
+                let ish = parseInt(item.atime[0] + item.atime[1]);
+                let ieh = parseInt(item.ltime[0] + item.ltime[1]);
+                let ism = parseInt(item.atime[3] + item.atime[4]);
+                let iem = parseInt(item.ltime[3] + item.ltime[4]);
+                                
+                if ((item.date !== date) || (item.key === editing.key) || ((eh < ish || (eh === ish && em < ism)) || (sh > ieh || (sh === ieh && sm > iem)))) {
+                    // flag = true;
+                }
+                else {
+                    flag = false;
+                }
+            })            
+            if (flag === false) {
+                message.error('Already filled time interval!');
             }
-            if (parseInt(hd) < 8) {
-                tags[0] = 'less';
+            else {
+                let tags = ['good'];
+                let hd = eh - sh;   // Hour Duration 
+                let md = em - sm;   // Minutes Duration            
+                if (md < 0) {
+                    hd = hd - 1;
+                    md = md + 60;
+                }
+                if (parseInt(hd) < 8) {
+                    tags[0] = 'less';
+                }
+
+                setEditing({
+                    ...editing, 'date': date, 'project': project,
+                    'atime': atime, 'ltime': ltime, tags: tags, 'description': description
+                })
+                message.success('Updated Successfully !');
             }
-                                   
-            setEditing({
-                ...editing, 'date': date, 'project': project,
-                'atime': atime, 'ltime': ltime, tags: tags, 'description': description
-            })                
-            message.success('Updated Successfully !');          
-        }                    
-        // props.onUpdate(editing);
-        // setEditing(null);
-        setVisible(false);  
+        }
+        setVisible(false);
     }
-    
+
     useEffect(() => {
-        if(editing !== null)
-        {
+        if (editing !== null) {
             props.onUpdate(editing);
         }
     }, [editing])
-    
+
 
     const onFill = (record) => {
         form.setFieldsValue({
@@ -197,31 +211,46 @@ const Mysheet = (props) => {
     const onCancel = () => {
         setVisible(false);
     }
-        
+
     return (
         <>
+            <div className="site-card-border-less-wrapper">
+                <Card
+                    title="Aryan Patel"
+                    bordered={false}
+                    style={{                    
+                        width: '85%',
+                        margin:'auto',
+                        backgroundColor: 'transparent'
+                    }}
+                >                    
+                    <p style={{
+                        color: 'gray',
+                    }}> <Space><MailOutlined /></Space> asp6304@gmail.com</p>
+                    <p style={{ color: 'gray' }}> <Space><PhoneOutlined /></Space>  +91 9327310217</p>                    
+                </Card>
+            </div>
             <Table columns={columns} dataSource={props.data} />
-            <Modal title="Update Form" visible={visible} 
+            <Modal title="Update Form" visible={visible}
                 onCancel={onCancel}
                 footer={[
                     // <Button key="back" onClick={onCancel}>
                     //     Return
                     // </Button>,                                       
                 ]}
-                >
+            >
                 <Form id='form1' form={form} name="time_related_controls" {...formItemLayout} onFinish={onSubmit}>
                     <Form.Item name="datepicker" label="Date" {...config}>
-                        <DatePicker/>
+                        <DatePicker />
                     </Form.Item>
                     <Form.Item name="project" label="Project" rules={[{ required: true }]}>
                         <Select
                             placeholder="Select a project"
                             allowClear
                         >
-                            <Option value="general">General</Option>
-                            <Option value="project1">Project1</Option>
-                            <Option value="project2">Project2</Option>
-                            <Option value="project3">Project3</Option>
+                            {props.project &&props.project.map((option) => (
+                                <Option key={option} value={option}>{option}</Option>
+                            ))}
                         </Select>
                     </Form.Item>
                     <Form.Item name="atimepicker" label="Start Time" {...config}>
@@ -232,7 +261,7 @@ const Mysheet = (props) => {
                     </Form.Item>
                     <Form.Item name="description" label="Description">
                         <Input.TextArea style={{ width: "70%" }} />
-                    </Form.Item>  
+                    </Form.Item>
                     <Form.Item
                         wrapperCol={{
                             xs: {
@@ -248,12 +277,12 @@ const Mysheet = (props) => {
                         <Button type="primary" htmlType="submit">
                             Submit
                         </Button>
-                        <Button style={{margin:"0 0 0 10px"}} key="back" onClick={onCancel}>
+                        <Button style={{ margin: "0 0 0 10px" }} key="back" onClick={onCancel}>
                             Back
                         </Button>
-                    </Form.Item>                  
+                    </Form.Item>
                 </Form>
-            </Modal>                                               
+            </Modal>
         </>
     )
 }

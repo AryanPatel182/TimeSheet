@@ -1,20 +1,23 @@
 import React, { useState, useEffect } from 'react';
 import 'antd/dist/antd.min.css';
-import { Layout } from 'antd';
+// import { Layout } from 'antd';
 import Navbartab from './Navbartab';
 import FooterTab from './FooterTab';
 import AttendanceForm from './AttendanceForm';
 import MySheet from './MySheet';
 import { message } from 'antd';
-
+import './App.css';
 import {
   BrowserRouter as Router,
   Routes,
   Route,
 } from "react-router-dom";
 
+import { Layout } from 'antd';
+import Sidebar from './Sidebar';
+const {  Content } = Layout;
 
-const { Content } = Layout;
+// const { Content } = Layout;
 
 const App = () => {
 
@@ -41,16 +44,16 @@ const App = () => {
         let ieh = parseInt(item.ltime[0] + item.ltime[1]);
         let ism = parseInt(item.atime[3] + item.atime[4]);
         let iem = parseInt(item.ltime[3] + item.ltime[4]);
-
-        if ((eh<ish || (eh===ish && em<ism)) || (sh>ieh || (sh === ieh && sm>iem)) ){
+        
+        if ((item.date !== date) || ((eh<ish || (eh===ish && em<ism)) || (sh>ieh || (sh === ieh && sm>iem))))
+        {
           // flag = true;
         }
         else
         {
-          flag = false;
+          flag = false;          
         }
-
-      })
+      })      
       if (flag === false) {
         message.error('Already filled time interval!');
       }
@@ -91,8 +94,7 @@ const App = () => {
     message.success('Deleted Successfully !');
   }
 
-  const onUpdate = (ndat, e) => {
-    console.log("New Data ", ndat)
+  const onUpdate = (ndat, e) => {    
     setData(data.map((obj) => {
       if (obj.key === ndat.key) {
         return ndat;
@@ -102,6 +104,22 @@ const App = () => {
     }))
   }
 
+  const onAdd = (fieldsValue) => {
+    const project = fieldsValue['projectname'];
+    const temp = JSON.parse(localStorage.getItem("project"));
+    if(temp.includes(project))
+    {      
+      message.warn('Project Already Exists');
+    }
+    else
+    {
+      temp.push(project);
+      setProject(temp);  
+      message.success('Added Successfully !');  
+    }    
+  }
+
+
   let initData;
   if (localStorage.getItem("data") === null) {
     initData = [];
@@ -110,38 +128,59 @@ const App = () => {
     initData = JSON.parse(localStorage.getItem("data"));
   }
 
+  let initProj;
+  if (localStorage.getItem("project") === null) {
+    initProj = [];
+  }
+  else {
+    initProj = JSON.parse(localStorage.getItem("project"));
+  }
+
+
   const [data, setData] = useState(initData);
+  const [project, setProject] = useState(initProj);
 
   useEffect(() => {
-    localStorage.setItem("data", JSON.stringify(data));
+    localStorage.setItem("data", JSON.stringify(data));    
   }, [data])
 
+  useEffect(() => {
+    localStorage.setItem("project", JSON.stringify(project));
+  }, [project])
+
   return (
-    <Layout className="layout">
-      <Router>
-        <Navbartab />
-        <Routes>
+    <Layout>      
+      {/* <Sidebar/> */}
+      <Layout className="layout">      
+        <Router>
+          <Navbartab project={project} onAdd={onAdd}/>
+          <Routes>
+            <Route path="/" element={<Content
+              style={{
+                padding: '0 50px',
+              }}>
+              <AttendanceForm data={data} project={project} onFinish={onFinish} />
+            </Content>} />
 
-          <Route path="/" element={<Content
-            style={{
-              padding: '0 50px',
-            }}>
-            <AttendanceForm data={data} onFinish={onFinish} />
-          </Content>} />
+            <Route path="/home" element={<Content
+              style={{
+                padding: '0 50px',
+              }}>
+              <AttendanceForm data={data} project={project} onFinish={onFinish} />
+            </Content>} />
 
-          <Route path="/home" element={<Content
-            style={{
-              padding: '0 50px',
-            }}>
-            <AttendanceForm data={data} onFinish={onFinish} />
-          </Content>} />
+            <Route path="/mysheet" element={<MySheet data={data} project={project} onDelete={onDelete} onUpdate={onUpdate} />} />
 
-          <Route path="/mysheet" element={<MySheet data={data} onDelete={onDelete} onUpdate={onUpdate} />} />
-
-        </Routes>
-        <FooterTab />
-      </Router>
+          </Routes>
+          <FooterTab />
+        </Router>
+      </Layout>
     </Layout>
+
+
+    
+  
+  
   )
 }
 

@@ -48,14 +48,15 @@ const AttendanceForm = (props) => {
                         <DatePicker />
                     </Form.Item>
                     <Form.Item name="project" label="Project" rules={[{ required: true }]}>
+                        
                         <Select style={{ width: "70%" }}
                             placeholder="Select a project"
                             allowClear
-                        >
-                            <Option value="general">General</Option>
-                            <Option value="project1">Project1</Option>
-                            <Option value="project2">Project2</Option>
-                            <Option value="project3">Project3</Option>
+                        >                            
+                            {props.project.length!==0 && props.project.map((option) => (
+                                <Option key={option} value={option}>{option}</Option>
+                            ))}
+
                         </Select>
                     </Form.Item>
                     <Form.Item name="atimepicker" label="Start Time" {...config}>
