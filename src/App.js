@@ -14,13 +14,16 @@ import {
 } from "react-router-dom";
 
 import { Layout } from 'antd';
-import Sidebar from './Sidebar';
+// import Sidebar from './Sidebar';
+import Login from './Login/Login';
+import Authentication from './Login/Authentication';
+
 const {  Content } = Layout;
 
 // const { Content } = Layout;
 
 const App = () => {
-
+  
   const onFinish = (fieldsValue) => {    
     const date = fieldsValue['datepicker'].format('YYYY-MM-DD');
     const project = fieldsValue['project'];
@@ -52,7 +55,7 @@ const App = () => {
         else
         {
           flag = false;          
-        }
+        }        
       })      
       if (flag === false) {
         message.error('Already filled time interval!');
@@ -94,6 +97,13 @@ const App = () => {
     message.success('Deleted Successfully !');
   }
 
+  const onProjectDelete = (proj) => {
+    setProject(project.filter((obj) => {
+      return obj!==proj;
+    }));
+    message.success('Deleted Successfully !');
+  }
+
   const onUpdate = (ndat, e) => {    
     setData(data.map((obj) => {
       if (obj.key === ndat.key) {
@@ -105,18 +115,47 @@ const App = () => {
   }
 
   const onAdd = (fieldsValue) => {
-    const project = fieldsValue['projectname'];
+    var nproject = fieldsValue['projectname'];
+    var manager = fieldsValue['projectmanager'];
+      
     const temp = JSON.parse(localStorage.getItem("project"));
-    if(temp.includes(project))
-    {      
-      message.warn('Project Already Exists');
-    }
-    else
-    {
-      temp.push(project);
-      setProject(temp);  
-      message.success('Added Successfully !');  
+    let i = 0;
+    while (nproject[i] === ' '){
+      i++;
     }    
+    let j = nproject.length-1;
+    while (nproject[j] === ' '){
+      j--;
+    }    
+    
+    if(i>j){
+      nproject = "";
+    }
+    else{
+      nproject = nproject.substring(i, j+1);
+    }
+
+    // console.log(project.length)
+    if (nproject.length === 0)
+    {
+      message.warn(`Project can't be Empty`);
+    }
+    
+    let flag = true;
+    const col = { 'project': nproject, 'manager': manager };      
+    project.map((proj) => {
+      if(proj.project === nproject)
+      {
+        message.warn(`Project Already Exists`);
+        flag = false;
+        return
+      }
+    })
+    if(flag)
+    {
+      setProject([...project, col]);  
+      message.success('Added Successfully !');  
+    }        
   }
 
 
@@ -136,9 +175,19 @@ const App = () => {
     initProj = JSON.parse(localStorage.getItem("project"));
   }
 
+  let initUser;
+  if(localStorage.getItem("user") === null){
+    initUser = [];
+  }
+  else
+  {
+    initUser = JSON.parse(localStorage.getItem("user"));
+  }
 
   const [data, setData] = useState(initData);
   const [project, setProject] = useState(initProj);
+  const [token, setToken] = useState();
+  const [user, setUser] = useState(initUser);
 
   useEffect(() => {
     localStorage.setItem("data", JSON.stringify(data));    
@@ -148,12 +197,21 @@ const App = () => {
     localStorage.setItem("project", JSON.stringify(project));
   }, [project])
 
+  useEffect(() => {
+    const temp = [{username:'admin', password:'admin', name:'Aryan Patel', project:[]}];
+    localStorage.setItem("user", JSON.stringify(temp));
+    // localStorage.setItem("user", JSON.stringify(user));
+  }, [user])
+
+  if (!token) {
+    return <Authentication setToken={setToken} />
+  }
+
   return (
-    <Layout>      
-      {/* <Sidebar/> */}
+    <Layout>            
       <Layout className="layout">      
         <Router>
-          <Navbartab project={project} onAdd={onAdd}/>
+          <Navbartab project={project} onAdd={onAdd} onProjectDelete={onProjectDelete}/>
           <Routes>
             <Route path="/" element={<Content
               style={{

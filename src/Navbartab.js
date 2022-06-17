@@ -2,10 +2,15 @@ import React, {useState} from 'react'
 import 'antd/dist/antd.min.css';
 import { Link } from "react-router-dom";
 
-import { Layout, Button, Dropdown, Menu, Modal, Form, Input } from 'antd';
+import { Layout, Button, Dropdown, Menu, Modal, Form, Input, Popconfirm, List, Avatar} from 'antd';
 import {
     HomeOutlined,
-    DatabaseOutlined
+    DatabaseOutlined,
+    SettingOutlined,
+    FileAddOutlined,
+    OrderedListOutlined,
+    DeleteOutlined,
+    // EditOutlined
 } from '@ant-design/icons';
 const { Header } = Layout;
 
@@ -22,7 +27,7 @@ const Navbartab = (props) => {
                         setVisible(true);
                     }),
                     label: (
-                        <p> Add Project </p>
+                        <p><FileAddOutlined /> Add Project </p>
                     ),
                 },
                 {
@@ -31,7 +36,7 @@ const Navbartab = (props) => {
                         setVisible2(true);
                     }),
                     label: (
-                        <p>My Projects </p>
+                        <p><OrderedListOutlined /> My Projects </p>
                     ),
                 },
             ]}
@@ -56,9 +61,9 @@ const Navbartab = (props) => {
                 mode="horizontal"
                 defaultSelectedKeys={['home']}
             >
-                <Menu.Item style={{ color: 'black' }}>TimeSheet</Menu.Item>
+                <Menu.Item key='title' style={{ color: 'black' }}>TimeSheet</Menu.Item>
                 <Menu.Item key='home'><Link to="/home"><HomeOutlined /> Home </Link></Menu.Item>
-                <Menu.Item key='mysheet'><Link to="/mysheet"> <DatabaseOutlined />MySheet </Link></Menu.Item>                
+                <Menu.Item key='mysheet'><Link to="/mysheet"> <DatabaseOutlined /> MySheet </Link></Menu.Item>                                
                 <Menu.Item key='settings'>
                     <Dropdown
                         overlay={menu}
@@ -67,7 +72,7 @@ const Navbartab = (props) => {
                             pointAtCenter: true,
                         }}
                     >
-                        <Button>Settings</Button>
+                        <Button><SettingOutlined />Settings</Button>
                     </Dropdown>
                 </Menu.Item>
             </Menu>
@@ -78,7 +83,10 @@ const Navbartab = (props) => {
             >
                 <Form id='form2' form={form} name="project_controls" onFinish={(fieldsValue) => { props.onAdd(fieldsValue); onReset(); }}>              
                     <Form.Item name="projectname" label="Project">
-                        <Input placeholder="Project Name"/>
+                        <Input autoComplete='off' placeholder="Project Name" required="required"/>
+                    </Form.Item>                    
+                    <Form.Item name="projectmanager" label="Manager">
+                        <Input autoComplete='off' placeholder="Project Manager" required="required"/>
                     </Form.Item>                    
                     <Form.Item
                         wrapperCol={{
@@ -106,10 +114,44 @@ const Navbartab = (props) => {
                 footer={[                                   
                 ]}
             >
-                <div>
-                    {props.project.length !== 0 && props.project.map((option) => (
-                        <p>{option}</p>
-                    ))}
+                <div>                    
+                    <List
+                        itemLayout="horizontal"
+                        dataSource={props.project}
+                        renderItem={(item) => (
+                            <List.Item>
+                                <List.Item.Meta
+                                    avatar={<Avatar src="" />}
+                                    title={<a href="">{item.project}</a>}
+                                    description={item.manager}
+                                />
+                                <Popconfirm
+                                    title="Are you sure to delete ?"
+                                    onConfirm={(e) => { props.onProjectDelete(item); }}
+                                    onCancel={(e) => { }}
+                                    okText="Yes"
+                                    cancelText="No"
+                                >
+                                    <DeleteOutlined
+                                        style={{ color: "red", marginLeft: 12 }}
+                                    />
+                                </Popconfirm>
+                            </List.Item>
+                        )}
+                    />
+                            {/* <p>{project.project}</p> 
+                            <p>{project.manager}</p>
+                            <Popconfirm
+                                title="Are you sure to delete ?"
+                                onConfirm={(e) => { props.onProjectDelete(project); }}
+                                onCancel={(e) => { }}
+                                okText="Yes"
+                                cancelText="No"
+                            >
+                                <DeleteOutlined
+                                    style={{ color: "red", marginLeft: 12 }}
+                                />
+                            </Popconfirm>                         */}
                 </div>
             </Modal>
         </Header>

@@ -54,7 +54,7 @@ const AttendanceForm = (props) => {
                             allowClear
                         >                            
                             {props.project.length!==0 && props.project.map((option) => (
-                                <Option key={option} value={option}>{option}</Option>
+                                <Option key={option.project} value={option.project}>{option.project}</Option>
                             ))}
 
                         </Select>

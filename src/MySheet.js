@@ -1,14 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { Table, Modal, Tag, Card } from 'antd';
-import { EditOutlined, DeleteOutlined, PhoneOutlined, MailOutlined } from "@ant-design/icons";
+import { EditOutlined, DeleteOutlined, PhoneOutlined, MailOutlined,UserOutlined } from "@ant-design/icons";
 import moment from 'moment'
-import { Button, Form, Input, Select, Popconfirm } from 'antd';
+import { Button, Form, Input, Select, Popconfirm, Progress, Col, Row, Tabs } from 'antd';
 import { DatePicker, TimePicker } from 'antd';
 import { Space } from 'antd';
 import { message } from 'antd';
 import './MySheet.css';
 
+const { TabPane } = Tabs;
 const { Option } = Select;
+
 const Mysheet = (props) => {
     const [form] = Form.useForm();
     const [visible, setVisible] = useState(false);
@@ -44,11 +46,7 @@ const Mysheet = (props) => {
     };
 
     const columns = [
-        {
-            title: '#',
-            dataIndex: 'key',
-            key: 'key',
-        },
+        
         {
             title: 'Date',
             dataIndex: 'date',
@@ -211,26 +209,59 @@ const Mysheet = (props) => {
     const onCancel = () => {
         setVisible(false);
     }
+    
+    const style = {        
+        padding: '8px 0',
+    };
 
     return (
-        <>
-            <div className="site-card-border-less-wrapper">
-                <Card
-                    title="Aryan Patel"
-                    bordered={false}
-                    style={{                    
-                        width: '85%',
-                        margin:'auto',
-                        backgroundColor: 'transparent'
+        <>            
+            <div className="site-card-border-less-wrapper">       
+                <Row 
+                    gutter={{
+                        xs: 8,
+                        sm: 16,
+                        md: 24,
+                        lg: 32,                        
                     }}
-                >                    
-                    <p style={{
-                        color: 'gray',
-                    }}> <Space><MailOutlined /></Space> asp6304@gmail.com</p>
-                    <p style={{ color: 'gray' }}> <Space><PhoneOutlined /></Space>  +91 9327310217</p>                    
-                </Card>
+                    style={{ margin: 'auto' }}
+                >
+                    <Col className="gutter-row" span={12}>
+                        <Card
+                            bordered={false}
+                            style={{
+                                width: '85%',
+                                margin: 'auto',
+                                backgroundColor: 'transparent'
+                            }}
+                        >
+                            <p><UserOutlined /> Aryan Patel</p>
+                            <p style={{
+                                color: 'gray',
+                            }}> <Space><MailOutlined /></Space> asp6304@gmail.com</p>
+                            <p style={{ color: 'gray' }}> <Space><PhoneOutlined /></Space>  +91 9327310217</p>
+                        </Card>
+                    </Col>
+                    <Col className="gutter-row" span={12} style={{ margin: 'auto' }}>
+                        <Progress type="circle" percent={50} width={80} format={percent => `${percent} hours`}/>                                                
+                    </Col>                   
+                </Row>                 
             </div>
-            <Table columns={columns} dataSource={props.data} />
+            <div className='tabs'>
+                <Tabs type="card">
+                    <TabPane tab="Daily" key="1">
+                        <Table columns={columns} dataSource={props.data.filter((obj) => {                            
+                            return obj.date === moment(new Date(), 'YYYY-MM-DD').format('YYYY-MM-DD')
+                        })} />
+                    </TabPane>
+                    <TabPane tab="Weekly" key="2">
+                        Content of Tab Pane 2
+                    </TabPane>
+                    <TabPane tab="Calendar" key="3">
+                        Content of Tab Pane 3
+                    </TabPane>
+                </Tabs>
+            </div>            
             <Modal title="Update Form" visible={visible}
                 onCancel={onCancel}
                 footer={[
@@ -248,8 +279,8 @@ const Mysheet = (props) => {
                             placeholder="Select a project"
                             allowClear
                         >
-                            {props.project &&props.project.map((option) => (
-                                <Option key={option} value={option}>{option}</Option>
+                            {props.project &&props.project.map((item) => (
+                                <Option key={item.project} value={item.project}>{item.project}</Option>
                             ))}
                         </Select>
                     </Form.Item>
