@@ -25,7 +25,7 @@ const {  Content } = Layout;
 const App = () => {
   
   const onFinish = (fieldsValue) => {    
-    const date = fieldsValue['datepicker'].format('YYYY-MM-DD');
+    const date = fieldsValue['datepicker'].format('DD-MM-YYYY');
     const project = fieldsValue['project'];
     const atime = fieldsValue['atimepicker'].format('HH:mm:ss');
     const ltime = fieldsValue['ltimepicker'].format('HH:mm:ss');
