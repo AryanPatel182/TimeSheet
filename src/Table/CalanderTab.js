@@ -1,21 +1,26 @@
+import { Badge, Calendar } from 'antd';
 import React, { useState, useEffect } from 'react';
 import { Table, Modal, Tag, Card } from 'antd';
 import { EditOutlined, DeleteOutlined, PhoneOutlined, MailOutlined, UserOutlined } from "@ant-design/icons";
 import moment from 'moment'
 import { Button, Form, Input, Select, Popconfirm, Progress, Col, Row, Tabs } from 'antd';
 import { DatePicker, TimePicker } from 'antd';
-import { Space } from 'antd';
 import { message } from 'antd';
+
+import {
+    WeeklyCalendar,
+} from 'antd-weekly-calendar';
 
 const { TabPane } = Tabs;
 const { Option } = Select;
 
-const Daily = (props) => {
+const CalendarTab = (props) => {
     const [form] = Form.useForm();
-    const [date_chooser] = Form.useForm();
-    const [visible, setVisible] = useState(false);
     const [editing, setEditing] = useState(null);
-    const [datadate, setDatadate] = useState(moment(new Date()).format('DD-MM-YYYY'));
+    const [id, setId] = useState(-1);
+    const [visible, setVisible] = useState(false);
+    const events = [];
+
     const formItemLayout = {
         labelCol: {
             xs: {
@@ -45,95 +50,27 @@ const Daily = (props) => {
         ],
     };
 
-    const columns = [
-        {
-            title: 'Date',
-            dataIndex: 'date',
-            key: 'date',
-            // render: (text) => <p>{text}</p>,
-        },
-        {
-            title: 'Project',
-            dataIndex: 'project',
-            key: 'project',
-        },
-        // {
-        //     title: 'Arrival Time',
-        //     dataIndex: 'atime',
-        //     key: 'atime',
-        // },
-        // {
-        //     title: 'Leaving Time',
-        //     dataIndex: 'ltime',
-        //     key: 'ltime',
-        // },
-        {
-            title: 'Description',
-            dataIndex: 'description',
-            key: 'description',
-        },
-        {
-            title: 'Tags',
-            key: 'tags',
-            dataIndex: 'tags',
-            render: (_, { tags }) => (
-                <>
-                    {tags.map((tag) => {
-                        let color = tag.length > 5 ? 'geekblue' : 'green';
-
-                        if (tag === 'less') {
-                            color = 'red';
-                        }
-                        if (tag === 'good') {
-                            color = 'green';
-                        }
-
-                        return (
-                            <Tag color={color} key={tag}>
-                                {tag.toUpperCase()}
-                            </Tag>
-                        );
-                    })}
-                </>
-            ),
-        },
-        {
-            title: 'Action',
-            dataIndex: 'key',
-            key: 'key',
-            render: (_, record) => (
-                <>
-                    <Popconfirm
-                        title="Are you sure to delete ?"
-                        onConfirm={(e) => { props.onDelete(record.key, e); }}
-                        onCancel={(e) => { }}
-                        okText="Yes"
-                        cancelText="No"
-                    >
-                        <DeleteOutlined
-                            style={{ color: "red", marginLeft: 12 }}
-                        />
-                    </Popconfirm>
-                    <span
-                        onClick={(e) => { onUpdate(record, e); }}
-                    >
-                        <EditOutlined
-                            style={{ color: "blue", marginLeft: 12 }}
-                        />
-                    </span>
-                </>
-            ),
-        },
-    ];
-
-    const onUpdate = (record) => {
-        setVisible(true);
-        onFill(record); 
-        setEditing({ ...record });
+    const getStartTime = (date, atime) => {
+        let startTime = new Date(parseInt(date.substring(6)), parseInt(date.substring(3, 5))-1, parseInt(date.substring(0, 2)), parseInt(atime.substring(0, 2)), parseInt(atime.substring(3, 5)), 0);
+        return startTime;
     }
 
+    const getEndTime = (date, ltime) => {
+        let endTime = new Date(parseInt(date.substring(6)), parseInt(date.substring(3, 5))-1, parseInt(date.substring(0, 2)), parseInt(ltime.substring(0, 2)), parseInt(ltime.substring(3, 5)), 0);
+        return endTime;
+    }
+
+    
+    props.data.map((event) => {
+        let stime = getStartTime(event.date, event.atime);
+        let etime = getEndTime(event.date, event.ltime);
+        events.push({ eventId: event.key, startTime: stime, endTime: etime, title: event.description, backgroundColor: 'rgb(193 193 193 / 32%)' });
+    })
+    
+
     const onSubmit = (fieldsValue) => {
-        const date = fieldsValue['datepicker'].format('DD-MM-YYYY');
+        const key = parseInt(id);
+        const date = fieldsValue['datepicker'].format('DD-MM-YYYY');    
         const project = fieldsValue['project'];
         const atime = fieldsValue['atimepicker'].format('HH:mm:ss');
         const ltime = fieldsValue['ltimepicker'].format('HH:mm:ss');
@@ -150,13 +87,12 @@ const Daily = (props) => {
         else {
             let flag = true;
             props.data.map((item) => {
-
                 let ish = parseInt(item.atime[0] + item.atime[1]);
                 let ieh = parseInt(item.ltime[0] + item.ltime[1]);
                 let ism = parseInt(item.atime[3] + item.atime[4]);
                 let iem = parseInt(item.ltime[3] + item.ltime[4]);
 
-                if ((item.date !== date) || (item.key === editing.key) || ((eh < ish || (eh === ish && em < ism)) || (sh > ieh || (sh === ieh && sm > iem)))) {
+                if ((item.date !== date) || (item.key === key) || ((eh < ish || (eh === ish && em < ism)) || (sh > ieh || (sh === ieh && sm > iem)))) {
                     // flag = true;
                 }
                 else {
@@ -179,12 +115,40 @@ const Daily = (props) => {
                 }
 
                 setEditing({
-                    ...editing, 'date': date, 'project': project,
+                    'key': key, 'date': date, 'project': project,
                     'atime': atime, 'ltime': ltime, tags: tags, 'description': description
                 })
                 message.success('Updated Successfully !');
             }
         }
+        setVisible(false);
+    }
+
+    const onUpdate = (record) => {
+        setVisible(true);
+        onFill(record);      
+        setId(record.eventId);        
+    }
+    
+    const onFill = (record) => {
+        let project = null;
+        props.data.map((item) => {
+            if(item.key === record.eventId)
+            {
+                project = item.project;
+                return;
+            }
+        })
+        form.setFieldsValue({
+            datepicker: moment(record.startTime, 'DD-MM-YYYY'),
+            project: project,
+            atimepicker: moment(record.startTime, 'HH:mm:ss'),
+            ltimepicker: moment(record.endTime, 'HH:mm:ss'),
+            description: record.title
+        });        
+    };
+
+    const onCancel = () => {
         setVisible(false);
     }
 
@@ -194,46 +158,13 @@ const Daily = (props) => {
         }
     }, [editing])
 
-
-    const onFill = (record) => {
-        form.setFieldsValue({
-            datepicker: moment(record.date, 'DD-MM-YYYY'),
-            project: record.project,
-            atimepicker: moment(record.atime, 'HH:mm:ss'),
-            ltimepicker: moment(record.ltime, 'HH:mm:ss'),
-            description: record.description
-        });
-    };
-
-    const onCancel = () => {
-        setVisible(false);
-    }
-
-    const style = {
-        padding: '8px 0',
-    };
-
-    useEffect(() => {
-        date_chooser.setFieldsValue({
-            datepicker: moment(new Date(), 'DD-MM-YYYY'),            
-        });
-    }, [])
-    
-
     return (
-        <>                                         
-            <Form id='form2' form={date_chooser} name="choose_date_for_data">
-                <Form.Item name="datepicker" label="Date">
-                    <DatePicker onChange={(e) => {setDatadate(e.format('DD-MM-YYYY'))}}/>
-                </Form.Item>
-            </Form>
-
-            {/* <DatePicker onChange={(e) => { setDatadate(e.target.value)}}/>             */}
-            <Table columns={columns} dataSource={props.data.filter((obj) => {
-                // return obj.date === moment(new Date(), 'DD-MM-YYYY').format('DD-MM-YYYY')
-                // return obj.date === datadate;
-                return obj.date === datadate;
-            })} />
+        <div>            
+            <WeeklyCalendar
+                events={events}                                                     
+                onEventClick={(event) => onUpdate(event)}
+                onSelectDate={(date) => console.log(date)}                
+            />
             <Modal title="Update Form" visible={visible}
                 onCancel={onCancel}
                 footer={[
@@ -245,7 +176,7 @@ const Daily = (props) => {
                 <Form id='form1' form={form} name="time_related_controls" {...formItemLayout} onFinish={onSubmit}>
                     <Form.Item name="datepicker" label="Date" {...config}>
                         <DatePicker />
-                    </Form.Item>
+                    </Form.Item>      
                     <Form.Item name="project" label="Project" rules={[{ required: true }]}>
                         <Select
                             placeholder="Select a project"
@@ -255,7 +186,7 @@ const Daily = (props) => {
                                 <Option key={item.project} value={item.project}>{item.project}</Option>
                             ))}
                         </Select>
-                    </Form.Item>
+                    </Form.Item>              
                     <Form.Item name="atimepicker" label="Start Time" {...config}>
                         <TimePicker />
                     </Form.Item>
@@ -280,14 +211,14 @@ const Daily = (props) => {
                         <Button type="primary" htmlType="submit">
                             Submit
                         </Button>
-                        <Button style={{ margin: "0 0 0 10px" }} key="back" onClick={onCancel}>
+                        <Button style={{ margin: "0 0 0 10px" }} onClick={onCancel} key="back">
                             Back
                         </Button>
                     </Form.Item>
                 </Form>
             </Modal>
-        </>
+        </div>
     )
-}
+};
 
-export default Daily;
+export default CalendarTab;

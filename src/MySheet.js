@@ -6,6 +6,7 @@ import { Space } from 'antd';
 import './MySheet.css';
 import Daily from './Table/Daily';
 import Weekly from './Table/Weekly';
+import CalendarTab from './Table/CalanderTab'
 
 const { TabPane } = Tabs;
 const Mysheet = (props) => {        
@@ -44,13 +45,13 @@ const Mysheet = (props) => {
             <div className='tabs'>
                 <Tabs type="card">
                     <TabPane tab="Daily" key="1">
-                        <Daily data={props.data} onUpdate={props.onUpdate} onDelete={props.onDelete}/>                        
+                        <Daily data={props.data}  onUpdate={props.onUpdate} onDelete={props.onDelete}/>                        
                     </TabPane>
                     <TabPane tab="Weekly" key="2">
                         <Weekly data={props.data}></Weekly>
                     </TabPane>
                     <TabPane tab="Calendar" key="3">
-                        Content of Tab Pane 3
+                        <CalendarTab data={props.data} onUpdate={props.onUpdate} project={props.project}></CalendarTab>
                     </TabPane>
                 </Tabs>
             </div>                       
