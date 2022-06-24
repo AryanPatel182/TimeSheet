@@ -10,6 +10,9 @@ import {
     FileAddOutlined,
     OrderedListOutlined,
     DeleteOutlined,
+    UserAddOutlined,
+    CloudUploadOutlined,
+    UserOutlined
     // EditOutlined
 } from '@ant-design/icons';
 const { Header } = Layout;
@@ -64,6 +67,9 @@ const Navbartab = (props) => {
                 <Menu.Item key='title' style={{ color: 'black' }}>TimeSheet</Menu.Item>
                 <Menu.Item key='home'><Link to="/home"><HomeOutlined /> Home </Link></Menu.Item>
                 <Menu.Item key='mysheet'><Link to="/mysheet"> <DatabaseOutlined /> MySheet </Link></Menu.Item>                                
+                <Menu.Item key='newuser'><Link to="/newuser"> <UserAddOutlined /> New User </Link></Menu.Item>                                
+                <Menu.Item key='documents'><Link to="/documents"> <CloudUploadOutlined /> Documents </Link></Menu.Item>                                
+                <Menu.Item key='profile'><Link to="/profile"> <UserOutlined /> Profile </Link></Menu.Item>                                
                 <Menu.Item key='settings'>
                     <Dropdown
                         overlay={menu}

@@ -5,7 +5,7 @@ import Navbartab from './Navbartab';
 import FooterTab from './FooterTab';
 import AttendanceForm from './AttendanceForm';
 import MySheet from './MySheet';
-import { message } from 'antd';
+import { message, Upload } from 'antd';
 import './App.css';
 import {
   BrowserRouter as Router,
@@ -14,12 +14,13 @@ import {
 } from "react-router-dom";
 
 import { Layout } from 'antd';
-// import Sidebar from './Sidebar';
+import Sidebar from './Sidebar';
 import Login from './Login/Login';
 import Authentication from './Login/Authentication';
-
+import UserForm from './UserProfile/UserForm';
+import UploadData from './Documents/UploadData';
+import ProfilePage from './Profile/ProfilePage';
 const {  Content } = Layout;
-
 // const { Content } = Layout;
 
 const App = () => {
@@ -207,8 +208,9 @@ const App = () => {
     return <Authentication setToken={setToken} />
   }
 
-  return (
+  return (    
     <Layout>            
+      {/* <Sidebar /> */}
       <Layout className="layout">      
         <Router>
           <Navbartab project={project} onAdd={onAdd} onProjectDelete={onProjectDelete}/>
@@ -228,7 +230,10 @@ const App = () => {
             </Content>} />
 
             <Route path="/mysheet" element={<MySheet data={data} project={project} onDelete={onDelete} onUpdate={onUpdate} />} />
-
+              
+            <Route path="/newuser" element={<UserForm/>} />
+            <Route path="/documents" element={<UploadData/>} />
+            <Route path="/profile"  element={<ProfilePage/>}/>
           </Routes>
           <FooterTab />
         </Router>

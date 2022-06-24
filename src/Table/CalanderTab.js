@@ -64,7 +64,7 @@ const CalendarTab = (props) => {
     props.data.map((event) => {
         let stime = getStartTime(event.date, event.atime);
         let etime = getEndTime(event.date, event.ltime);
-        events.push({ eventId: event.key, startTime: stime, endTime: etime, title: event.description, backgroundColor: 'rgb(193 193 193 / 32%)' });
+        events.push({ eventId: event.key, startTime: stime, endTime: etime, title: event.description, backgroundColor: 'rgb(152 216 142 / 32%)' });
     })
     
 
@@ -165,7 +165,7 @@ const CalendarTab = (props) => {
                 onEventClick={(event) => onUpdate(event)}
                 onSelectDate={(date) => console.log(date)}                
             />
-            <Modal title="Update Form" visible={visible}
+            <Modal title="Update Data" visible={visible}
                 onCancel={onCancel}
                 footer={[
                     // <Button key="back" onClick={onCancel}>

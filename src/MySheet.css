@@ -16,6 +16,10 @@
 {
     width: 85%;
     margin: auto;
+    padding: 15px;
+    background: white;
+    border: 1px solid #dad8d4;
+    border-radius: 10px;
 }
 
 .events {
@@ -44,14 +48,19 @@
 .ant-picker-calendar{
     padding: 20px;
 }
-
+/* 
 p{
-    color: black !important;
-    font-size: 10px;
-}
+    color: black !important;    
+} */
 
 /* .ant-table-row-level-0
 {
     
 } */
 
+
+.ant-tabs-content-holder {
+
+    padding: 25px;
+    border-radius: 10px;
+}

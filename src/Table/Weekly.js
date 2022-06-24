@@ -13,23 +13,36 @@ const Weekly = (props) => {
     var endOfWeek = moment().endOf('isoweek').toDate();
     let week = [];
     const days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
-    week.push(startOfWeek);
+    // week.push(startOfWeek);
 
-    for (let i = 0; i < 6; i++) {
-        let date = parseInt((week[i][0] + week[i][1])) + 1;
-        let month = parseInt((week[i][3] + week[i][4]));
-        let year = parseInt(week[i][6] + week[i][7] + week[i][8] + week[i][9]);
-
-        if (date > parseInt(endOfWeek[0] + endOfWeek[1])) {
-            month += 1;
-            if (month === 13) {
-                month = 1;
-                year += 1;
-            }
-        }
-        let today = date + '-' + (month < 10 ? '0' : '') + month + '-' + year;
-        week.push(today);
+    var curr = new Date; // get current date
+    var first = curr.getDate() - curr.getDay();
+    console.log(curr.getDay()-curr.getDay())    
+    var firstday = (new Date(curr.setDate(first + 1))).toString();
+    for (var i = 1; i < 8; i++) {
+        var next = new Date(curr.getTime());
+        next.setDate(first + i);   
+        // console.log(next)                     
+        let temp = next.toISOString().slice(0, 10);        
+        week.push(temp.substring(8) + '-' + temp.substring(5, 7) + '-' + temp.substring(0, 4));        
     }
+    // console.log(week)
+
+    // for (let i = 0; i < 6; i++) {
+    //     let date = parseInt((week[i][0] + week[i][1])) + 1;
+    //     let month = parseInt((week[i][3] + week[i][4]));
+    //     let year = parseInt(week[i][6] + week[i][7] + week[i][8] + week[i][9]);
+
+    //     if (date > parseInt(endOfWeek[0] + endOfWeek[1])) {
+    //         month += 1;
+    //         if (month === 13) {
+    //             month = 1;
+    //             year += 1;
+    //         }
+    //     }
+    //     let today = date + '-' + (month < 10 ? '0' : '') + month + '-' + year;
+    //     week.push(today);
+    // }
     const columns = [
         {
             title: <span>{week[0]}</span>,
@@ -115,9 +128,15 @@ const Weekly = (props) => {
         rowData[0]['total'] = (Math.floor(tm / 60)) + 'h : ' + (tm % 60) + 'm';
         return rowData;
     }
-
+    const onChange = (date, dateString) => {
+        console.log(date, dateString);
+    };
     return (
         <>
+            {/* <Space direction="vertical">
+                
+                <DatePicker onChange={onChange} picker="week" />                
+            </Space> */}
             <Table columns={columns} dataSource={getWeeklyData(props.data)} />            
         </>
     )

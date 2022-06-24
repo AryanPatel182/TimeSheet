@@ -1,0 +1,9 @@
+.form-top
+{
+    margin: 5vh auto;
+    width: 80vw;
+    padding: 6vh 6vw;
+    background-color: white;
+    border: 1px solid #dad8d4;
+    border-radius: 10px
+}
