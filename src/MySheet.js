@@ -45,7 +45,7 @@ const Mysheet = (props) => {
             <div className='tabs'>
                 <Tabs type="card">
                     <TabPane tab="Daily" key="1">
-                        <Daily data={props.data}  onUpdate={props.onUpdate} onDelete={props.onDelete}/>                        
+                        <Daily data={props.data} project={props.project} onUpdate={props.onUpdate} onDelete={props.onDelete}/>                        
                     </TabPane>
                     <TabPane tab="Weekly" key="2">
                         <Weekly data={props.data}></Weekly>

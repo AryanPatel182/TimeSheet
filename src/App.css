@@ -40,8 +40,12 @@
 
 .site-layout-content {
   min-height: 280px;
-  padding: 24px;
-  background: #fff;
+  margin: 5vh auto;
+    width: 80vw;
+    padding: 6vh 6vw;
+    background-color: white;
+    border: 1px solid #dad8d4;
+    border-radius: 10px;
 }
 
 #components-layout-demo-top .logo {

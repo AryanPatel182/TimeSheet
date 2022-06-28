@@ -42,7 +42,7 @@ const AttendanceForm = (props) => {
     
     return (
         <>
-            <div className="site-layout-content" style={{margin:"40px 0 0 0"}}>
+            <div className="site-layout-content">
                 <Form id='form1' form={form} name="time_related_controls" {...formItemLayout} onFinish={(fieldsValue) => { props.onFinish(fieldsValue); onReset();}}>
                     <Form.Item name="datepicker" label="Date" {...config}>
                         <DatePicker />

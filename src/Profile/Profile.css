@@ -7,3 +7,10 @@
     border: 1px solid #dad8d4;
     border-radius: 10px;
 }
+
+.about-row
+{
+    margin: 0 0 15px 0;
+    color: rgb(104, 102, 102);
+    font-size: 12px;
+}

@@ -1,6 +1,6 @@
-.site-card-border-less-wrapper {
+/* .site-card-border-less-wrapper {
     padding: 30px;    
-}
+} */
 
 .ant-table-wrapper
 {    
@@ -15,7 +15,7 @@
 .tabs
 {
     width: 85%;
-    margin: auto;
+    margin: 5vh auto;
     padding: 15px;
     background: white;
     border: 1px solid #dad8d4;

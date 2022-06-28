@@ -1,7 +1,17 @@
 import { UploadOutlined } from '@ant-design/icons';
-import { Button, message, Upload } from 'antd';
+import { Button, message, Upload, Select } from 'antd';
 import { useState } from 'react';
 import './Documents.css'
+const { Option } = Select;
+
+const onChange = (value) => {
+    console.log(`selected ${value}`);
+};
+
+const onSearch = (value) => {
+    console.log('search:', value);
+};
+
 const UploadData = () => {
     const [fileList, setFileList] = useState([]);
     const [uploading, setUploading] = useState(false);
@@ -49,7 +59,20 @@ const UploadData = () => {
     return (
         <>
             <div className='upload-top'>
-                <p> Attach Documents ( Doc1, Doc2, Doc3, Doc4 )</p>
+                <p> Upload Documents</p>
+                <Select
+                    showSearch
+                    placeholder="Type of a Document"
+                    optionFilterProp="children"
+                    onChange={onChange}
+                    onSearch={onSearch}
+                    filterOption={(input, option) => option.children.toLowerCase().includes(input.toLowerCase())}
+                >
+                    <Option value="Doc1">Doc1</Option>
+                    <Option value="Doc2">Doc2</Option>
+                    <Option value="Doc3">Doc3</Option>
+                </Select>
+                
                 <Upload {...props}>
                     <Button icon={<UploadOutlined />}>Select File</Button>
                 </Upload>
@@ -64,7 +87,7 @@ const UploadData = () => {
                 >
                     {uploading ? 'Uploading' : 'Start Upload'}
                 </Button>                
-            </div>
+            </div>            
         </>
     );
 };
