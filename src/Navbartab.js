@@ -69,7 +69,7 @@ const Navbartab = (props) => {
                 <Menu.Item key='mysheet'><Link to="/mysheet"> <DatabaseOutlined /> MySheet </Link></Menu.Item>                                
                 <Menu.Item key='newuser'><Link to="/newuser"> <UserAddOutlined /> New User </Link></Menu.Item>                                
                 <Menu.Item key='documents'><Link to="/documents"> <CloudUploadOutlined /> Documents </Link></Menu.Item>                                
-                <Menu.Item key='profile'><Link to="/profile"> <UserOutlined /> Profile </Link></Menu.Item>                                
+                <Menu.Item key='profile'><Link to="/profile"> <UserOutlined /> {props.user} </Link></Menu.Item>                                                
                 <Menu.Item key='settings'>
                     <Dropdown
                         overlay={menu}
@@ -81,7 +81,9 @@ const Navbartab = (props) => {
                         <Button><SettingOutlined />Settings</Button>
                     </Dropdown>
                 </Menu.Item>
+                <Menu.Item key='signout'><Button onClick={props.signOut}> Signout </Button></Menu.Item>                                
             </Menu>
+
             <Modal title="Add Project" visible={visible}   
                 onCancel={onCancel}             
                 footer={[                                   

@@ -1,5 +1,5 @@
 import React,{useState} from 'react'
-
+import './App.css';
 import {
     MenuFoldOutlined,
     MenuUnfoldOutlined,
@@ -24,7 +24,7 @@ const Sidebar = () => {
               console.log(collapsed, type);
           }}
       >
-          <div className="logo" />
+          <div className="logo"></div>
           <Menu
               theme="dark"
               mode="inline"

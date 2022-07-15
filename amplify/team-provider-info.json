@@ -1,0 +1,20 @@
+{
+  "dev": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-tsant-dev-205330-authRole",
+      "UnauthRoleArn": "arn:aws:iam::323526869397:role/amplify-tsant-dev-205330-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::323526869397:role/amplify-tsant-dev-205330-authRole",
+      "Region": "ap-south-1",
+      "DeploymentBucketName": "amplify-tsant-dev-205330-deployment",
+      "UnauthRoleName": "amplify-tsant-dev-205330-unauthRole",
+      "StackName": "amplify-tsant-dev-205330",
+      "StackId": "arn:aws:cloudformation:ap-south-1:323526869397:stack/amplify-tsant-dev-205330/44866990-f6f6-11ec-b514-0aa2162067a4",
+      "AmplifyAppId": "d2j3zsqzgezjtn"
+    },
+    "categories": {
+      "auth": {
+        "tsant414f00c9": {}
+      }
+    }
+  }
+}

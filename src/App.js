@@ -20,12 +20,21 @@ import Authentication from './Login/Authentication';
 import UserForm from './UserProfile/UserForm';
 import UploadData from './Documents/UploadData';
 import ProfilePage from './Profile/ProfilePage';
-const {  Content } = Layout;
+
+import { Amplify } from 'aws-amplify';
+
+import { withAuthenticator } from '@aws-amplify/ui-react';
+import '@aws-amplify/ui-react/styles.css';
+
+import awsmobile from './aws-exports';
+Amplify.configure(awsmobile);
+
+
+const { Content } = Layout;
 // const { Content } = Layout;
 
-const App = () => {
-  
-  const onFinish = (fieldsValue) => {    
+const App = ({ signOut, user}) => {  
+  const onFinish = (fieldsValue) => {
     const date = fieldsValue['datepicker'].format('DD-MM-YYYY');
     const project = fieldsValue['project'];
     const atime = fieldsValue['atimepicker'].format('HH:mm:ss');
@@ -43,21 +52,19 @@ const App = () => {
     else {
       let flag = true;
       data.map((item) => {
-        
+
         let ish = parseInt(item.atime[0] + item.atime[1]);
         let ieh = parseInt(item.ltime[0] + item.ltime[1]);
         let ism = parseInt(item.atime[3] + item.atime[4]);
         let iem = parseInt(item.ltime[3] + item.ltime[4]);
-        
-        if ((item.date !== date) || ((eh<ish || (eh===ish && em<ism)) || (sh>ieh || (sh === ieh && sm>iem))))
-        {
+
+        if ((item.date !== date) || ((eh < ish || (eh === ish && em < ism)) || (sh > ieh || (sh === ieh && sm > iem)))) {
           // flag = true;
         }
-        else
-        {
-          flag = false;          
-        }        
-      })      
+        else {
+          flag = false;
+        }
+      })
       if (flag === false) {
         message.error('Already filled time interval!');
       }
@@ -100,12 +107,12 @@ const App = () => {
 
   const onProjectDelete = (proj) => {
     setProject(project.filter((obj) => {
-      return obj!==proj;
+      return obj !== proj;
     }));
     message.success('Deleted Successfully !');
   }
 
-  const onUpdate = (ndat, e) => {    
+  const onUpdate = (ndat, e) => {
     setData(data.map((obj) => {
       if (obj.key === ndat.key) {
         return ndat;
@@ -118,45 +125,42 @@ const App = () => {
   const onAdd = (fieldsValue) => {
     var nproject = fieldsValue['projectname'];
     var manager = fieldsValue['projectmanager'];
-      
+
     const temp = JSON.parse(localStorage.getItem("project"));
     let i = 0;
-    while (nproject[i] === ' '){
+    while (nproject[i] === ' ') {
       i++;
-    }    
-    let j = nproject.length-1;
-    while (nproject[j] === ' '){
+    }
+    let j = nproject.length - 1;
+    while (nproject[j] === ' ') {
       j--;
-    }    
-    
-    if(i>j){
+    }
+
+    if (i > j) {
       nproject = "";
     }
-    else{
-      nproject = nproject.substring(i, j+1);
+    else {
+      nproject = nproject.substring(i, j + 1);
     }
 
     // console.log(project.length)
-    if (nproject.length === 0)
-    {
+    if (nproject.length === 0) {
       message.warn(`Project can't be Empty`);
     }
-    
+
     let flag = true;
-    const col = { 'project': nproject, 'manager': manager };      
+    const col = { 'project': nproject, 'manager': manager };
     project.map((proj) => {
-      if(proj.project === nproject)
-      {
+      if (proj.project === nproject) {
         message.warn(`Project Already Exists`);
         flag = false;
         return
       }
     })
-    if(flag)
-    {
-      setProject([...project, col]);  
-      message.success('Added Successfully !');  
-    }        
+    if (flag) {
+      setProject([...project, col]);
+      message.success('Added Successfully !');
+    }
   }
 
 
@@ -176,44 +180,42 @@ const App = () => {
     initProj = JSON.parse(localStorage.getItem("project"));
   }
 
-  let initUser;
-  if(localStorage.getItem("user") === null){
-    initUser = [];
-  }
-  else
-  {
-    initUser = JSON.parse(localStorage.getItem("user"));
-  }
+  // let initUser;
+  // if (localStorage.getItem("user") === null) {
+  //   initUser = [];
+  // }
+  // else {
+  //   initUser = JSON.parse(localStorage.getItem("user"));
+  // }
 
   const [data, setData] = useState(initData);
   const [project, setProject] = useState(initProj);
   const [token, setToken] = useState();
-  const [user, setUser] = useState(initUser);
+  // const [user, setUser] = useState(initUser);
 
   useEffect(() => {
-    localStorage.setItem("data", JSON.stringify(data));    
+    localStorage.setItem("data", JSON.stringify(data));
   }, [data])
 
   useEffect(() => {
     localStorage.setItem("project", JSON.stringify(project));
   }, [project])
 
-  useEffect(() => {
-    const temp = [{username:'admin', password:'admin', name:'Aryan Patel', project:[]}];
-    localStorage.setItem("user", JSON.stringify(temp));
-    // localStorage.setItem("user", JSON.stringify(user));
-  }, [user])
-
-  if (!token) {
-    return <Authentication setToken={setToken} />
-  }
-
-  return (    
-    <Layout>            
+  // useEffect(() => {
+  //   const temp = [{ username: 'admin', password: 'admin', name: 'Aryan Patel', project: [] }];
+  //   localStorage.setItem("user", JSON.stringify(temp));
+  //   // localStorage.setItem("user", JSON.stringify(user));
+  // }, [user])
+  
+  return (
+    
+    <Layout>
       {/* <Sidebar /> */}
-      <Layout className="layout">      
+      <Layout className="layout">
         <Router>
-          <Navbartab project={project} onAdd={onAdd} onProjectDelete={onProjectDelete}/>
+          <Navbartab project={project} signOut={signOut} user={user.attributes.email} onAdd={onAdd} onProjectDelete={onProjectDelete} />
+          {/* <h1>Hello {user.username}</h1> */}
+          
           <Routes>
             <Route path="/" element={<Content
               style={{
@@ -230,21 +232,16 @@ const App = () => {
             </Content>} />
 
             <Route path="/mysheet" element={<MySheet data={data} project={project} onDelete={onDelete} onUpdate={onUpdate} />} />
-              
-            <Route path="/newuser" element={<UserForm/>} />
-            <Route path="/documents" element={<UploadData/>} />
-            <Route path="/profile"  element={<ProfilePage/>}/>
+
+            <Route path="/newuser" element={<UserForm />} />
+            <Route path="/documents" element={<UploadData />} />
+            <Route path="/profile" element={<ProfilePage />} />
           </Routes>
           <FooterTab />
         </Router>
       </Layout>
     </Layout>
-
-
-    
-  
-  
   )
 }
 
-export default App;
+export default withAuthenticator(App);
