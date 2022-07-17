@@ -90,9 +90,8 @@ const CalendarTab = (props) => {
                 let ish = parseInt(item.atime[0] + item.atime[1]);
                 let ieh = parseInt(item.ltime[0] + item.ltime[1]);
                 let ism = parseInt(item.atime[3] + item.atime[4]);
-                let iem = parseInt(item.ltime[3] + item.ltime[4]);
-
-                if ((item.date !== date) || (item.key === key) || ((eh < ish || (eh === ish && em < ism)) || (sh > ieh || (sh === ieh && sm > iem)))) {
+                let iem = parseInt(item.ltime[3] + item.ltime[4]);                
+                if ((item.date !== date) || (item.key.toString() === key.toString()) || ((eh < ish || (eh === ish && em < ism)) || (sh > ieh || (sh === ieh && sm > iem)))) {
                     // flag = true;
                 }
                 else {

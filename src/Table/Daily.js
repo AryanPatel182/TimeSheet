@@ -232,7 +232,8 @@ const Daily = (props) => {
             <Table columns={columns} dataSource={props.data.filter((obj) => {
                 // return obj.date === moment(new Date(), 'DD-MM-YYYY').format('DD-MM-YYYY')
                 // return obj.date === datadate;
-                return obj.date === datadate;
+                // return obj.date === datadate;
+                return true;
             })} />
             <Modal title="Update Form" visible={visible}
                 onCancel={onCancel}

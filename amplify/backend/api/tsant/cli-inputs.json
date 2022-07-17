@@ -1,0 +1,14 @@
+{
+  "version": 1,
+  "serviceConfiguration": {
+    "apiName": "tsant",
+    "serviceName": "AppSync",
+    "gqlSchemaPath": "C:\\Users\\baps\\Desktop\\tsant\\amplify\\backend\\api\\tsant\\schema.graphql",
+    "defaultAuthType": {
+      "mode": "AMAZON_COGNITO_USER_POOLS",
+      "cognitoUserPoolId": "authtsant414f00c9"
+    },
+    "conflictResolution": {},
+    "additionalAuthTypes": []
+  }
+}

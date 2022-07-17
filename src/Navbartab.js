@@ -20,7 +20,7 @@ const { Header } = Layout;
 
 const Navbartab = (props) => {    
     const [visible, setVisible] = useState(false);
-    const [visible2, setVisible2] = useState(false);
+    const [visible2, setVisible2] = useState(false);    
     const menu = (
         <Menu
             items={[
@@ -42,13 +42,20 @@ const Navbartab = (props) => {
                         <p><OrderedListOutlined /> My Projects </p>
                     ),
                 },
+                {
+                    key: '3',                    
+                    label: (
+                        <Link to="/newuser"> <UserAddOutlined /> Edit Profile </Link>
+                    ),
+                },
+                
             ]}
         />
     );
 
     const onCancel = () => {
         setVisible(false);
-        setVisible2(false);
+        setVisible2(false);        
     }
 
     const [form] = Form.useForm();
@@ -67,7 +74,6 @@ const Navbartab = (props) => {
                 <Menu.Item key='title' style={{ color: 'black' }}>TimeSheet</Menu.Item>
                 <Menu.Item key='home'><Link to="/home"><HomeOutlined /> Home </Link></Menu.Item>
                 <Menu.Item key='mysheet'><Link to="/mysheet"> <DatabaseOutlined /> MySheet </Link></Menu.Item>                                
-                <Menu.Item key='newuser'><Link to="/newuser"> <UserAddOutlined /> New User </Link></Menu.Item>                                
                 <Menu.Item key='documents'><Link to="/documents"> <CloudUploadOutlined /> Documents </Link></Menu.Item>                                
                 <Menu.Item key='profile'><Link to="/profile"> <UserOutlined /> {props.user} </Link></Menu.Item>                                                
                 <Menu.Item key='settings'>

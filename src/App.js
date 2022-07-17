@@ -12,6 +12,10 @@ import {
   Routes,
   Route,
 } from "react-router-dom";
+import { API, graphqlOperation } from "aws-amplify";
+import * as queries from './graphql/queries';
+import * as mutations from './graphql/mutations';
+import * as subscriptions from './graphql/subscriptions';
 
 import { Layout } from 'antd';
 import Sidebar from './Sidebar';
@@ -34,7 +38,8 @@ const { Content } = Layout;
 // const { Content } = Layout;
 
 const App = ({ signOut, user}) => {  
-  const onFinish = (fieldsValue) => {
+
+  const onFinish = async (fieldsValue) => {
     const date = fieldsValue['datepicker'].format('DD-MM-YYYY');
     const project = fieldsValue['project'];
     const atime = fieldsValue['atimepicker'].format('HH:mm:ss');
@@ -83,25 +88,35 @@ const App = ({ signOut, user}) => {
 
         var sno;
         if (data === null || data.length === 0) {
-          sno = 0;
-          const values = { key: sno, date: date, project: project, atime: atime, ltime: ltime, tags: tags, description: description };
-          setData([values]);
+          sno = 0+"";
+          // const values = { key: sno, date: date, project: project, atime: atime, ltime: ltime, tags: tags, description: description };          
+          // setData([values]);          
         }
         else {
-          sno = data[data.length - 1].key + 1;
-          const values = { key: sno, date: date, project: project, atime: atime, ltime: ltime, tags: tags, description: description };
-          setData([...data, values]);
+          sno = (parseInt(data[data.length - 1].key) + 1)+"";
+          // const values = { key: sno, date: date, project: project, atime: atime, ltime: ltime, tags: tags, description: description };
+          // setData([...data, values]);
         }
+        const nvalues = { id: sno, date: date, project: project, atime: atime, ltime: ltime, tags: tags[0], description: description };
+        const newTask = await API.graphql({ query: mutations.createData, variables: { input: nvalues } });   
+        fetchData();
         message.success('Submitted Successfully !');
       }
     }
   };
 
-  const onDelete = (key, e) => {
-    // e.preventDefault();
-    setData(data.filter((obj) => {
-      return obj.key !== key;
-    }));
+  const onDelete = async (key, e) => {
+    e.preventDefault();
+    
+    // setData(data.filter((obj) => {
+    //   return obj.key !== key;
+    // }));
+
+    const taskDetails = {
+      id: key,
+    };
+    const deletedTask = await API.graphql({ query: mutations.deleteData, variables: { input: taskDetails } });
+    fetchData();
     message.success('Deleted Successfully !');
   }
 
@@ -112,14 +127,20 @@ const App = ({ signOut, user}) => {
     message.success('Deleted Successfully !');
   }
 
-  const onUpdate = (ndat, e) => {
-    setData(data.map((obj) => {
-      if (obj.key === ndat.key) {
-        return ndat;
-      }
-      return obj;
-
-    }))
+  const onUpdate = async (ndata, e) => {
+    // setData(data.map((obj) => {
+    //   if (obj.key === ndat.key) {
+    //     return ndat;
+    //   }
+    //   return obj;
+    // }))
+    console.log(ndata);
+    const taskDetails = {
+      id: ndata.key,
+      date: ndata.date, project: ndata.project, atime: ndata.atime, ltime: ndata.ltime, tags: ndata.tags[0], description: ndata.description 
+    };
+    const updatedTodo = await API.graphql({ query: mutations.updateData, variables: { input: taskDetails } });        
+    fetchData();    
   }
 
   const onAdd = (fieldsValue) => {
@@ -164,13 +185,13 @@ const App = ({ signOut, user}) => {
   }
 
 
-  let initData;
-  if (localStorage.getItem("data") === null) {
-    initData = [];
-  }
-  else {
-    initData = JSON.parse(localStorage.getItem("data"));
-  }
+  // let initData;  
+  // if (localStorage.getItem("data") === null) {
+  //   initData = [];
+  // }
+  // else {
+  //   initData = JSON.parse(localStorage.getItem("data"));
+  // }
 
   let initProj;
   if (localStorage.getItem("project") === null) {
@@ -188,13 +209,31 @@ const App = ({ signOut, user}) => {
   //   initUser = JSON.parse(localStorage.getItem("user"));
   // }
 
-  const [data, setData] = useState(initData);
-  const [project, setProject] = useState(initProj);
-  const [token, setToken] = useState();
+  const [data, setData] = useState([]);
+  const [project, setProject] = useState(initProj);  
   // const [user, setUser] = useState(initUser);
 
+
+  // const oneData = (async) => {await API.graphql(
+  //   graphqlOperation(queries.getData, { id: '1' })
+  // )};
+
+  const fetchData = async () => {
+    const allTasks = await API.graphql({ query: queries.listData });
+    console.log(allTasks.data.listData.items);     
+    const values = [];
+    allTasks.data.listData.items.map(Task => {      
+      values.push({ key: Task.id, date: Task.date, project: Task.project, atime: Task.atime, ltime: Task.ltime, tags: [Task.tags], description: Task.description });
+    })
+    setData(values);
+  };
+
   useEffect(() => {
-    localStorage.setItem("data", JSON.stringify(data));
+    fetchData();
+  }, [])
+  
+  useEffect(() => {
+    // localStorage.setItem("data", JSON.stringify(data));
   }, [data])
 
   useEffect(() => {

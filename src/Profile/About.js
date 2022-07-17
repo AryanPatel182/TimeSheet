@@ -3,7 +3,7 @@ import { Table, Descriptions, Badge, Col, Row } from 'antd';
 import ProfilePage from './ProfilePage';
 import './Profile.css';
 
-const About = () => {
+const About = (props) => {
   const dataSource = [
     {
       key: '1',
@@ -44,7 +44,7 @@ const About = () => {
           <span>Name:</span>
         </Col>
         <Col span={8}>
-          <span>Aryan Patel</span>
+          <span>{props.profiledata.firstName} {props.profiledata.lastName}</span>
         </Col>
       </Row>
       <Row className='about-row'>
@@ -61,7 +61,7 @@ const About = () => {
           <span>Email:</span>
         </Col>
         <Col span={8}>
-          <span style={{ color: '#1890ff' }}>asp6304@gmail.com</span>
+          <span style={{ color: '#1890ff' }}>{props.profiledata.email}</span>
         </Col>
       </Row>
       <Row className='about-row'>
@@ -69,7 +69,7 @@ const About = () => {
           <span>Phone:</span>
         </Col>
         <Col span={8}>
-          <span style={{ color: '#1890ff' }}>+91 38741902</span>
+          <span style={{ color: '#1890ff' }}>{props.profiledata.phone}</span>
         </Col>
       </Row>
 
@@ -79,7 +79,7 @@ const About = () => {
           <span>DOB:</span>
         </Col>
         <Col span={8}>
-          <span>June 2, 1998</span>
+          <span>{props.profiledata.dob}</span>
         </Col>
       </Row>
       <Row className='about-row'>
@@ -87,7 +87,7 @@ const About = () => {
           <span>Gender:</span>
         </Col>
         <Col span={8}>
-          <span>Male</span>
+          <span>{props.profiledata.gender}</span>
         </Col>
       </Row>
     </div>
